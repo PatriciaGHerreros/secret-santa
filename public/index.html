@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amigo Invisible</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-image: url('BACKGROUND.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-color: rgba(255, 255, 255, 0.5);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        h1, h2, h3, p {
+            color: #B22222;
+        }
+        h4, p {
+                color: #020000;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .mt-aligned {
+            margin-top: 90vh;
+        }
+        #perfil-juego,
+        #nuevo-juego,
+        #pantalla-juego {
+            margin-top: 0px;
+            padding-top: 20px; /* Añade un pequeño espacio si es necesario */
+            overflow-y: auto; /* Permite el desplazamiento si el contenido es muy largo */
+            max-height: calc(100vh - 40px); /* Ajusta la altura máxima para evitar que se corte */
+        }
+        #presupuesto-juego,
+        #presupuesto-sorteo,
+        #fecha-entrega,
+        #fecha-sorteo,
+        #mensaje-juego,
+        #nombre-administrador {
+            font-size: 24px; /* Cambia el tamaño de la letra según tus necesidades */
+            font-weight: bold; /* Pone la letra en negrita */
+            color:#B22222;
+        }
+        nav {
+            background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+            z-index: 1000; /* Asegúrate de que esté por encima del contenido */
+        }
+        /* Estilo general para todos los botones */
+        button, .btn, .perfil-juego-btn {
+            background-color: #ff0000;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 10px;
+            margin: 10px;
+            pointer-events: auto !important;
+        }
+
+        /*hover para todos los botones */
+        button:hover, .btn:hover, .perfil-juego-btn:hover {
+            background-color: #000000;
+        }
+
+
+    </style>
+</head>    
+    
+<body class="flex flex-col items-center justify-center h-screen text-center">
+    <nav class="fixed top-0 left-0 w-full bg-white bg-opacity-80 p-4 flex justify-between items-center">
+        <ul class="flex space-x-4">
+           <li><button class="btn" onclick="salirJuego()">Salir</button></li>
+        </ul>
+    </nav>
+    
+    <div class="bg-white bg-opacity-80 p-8 rounded-lg shadow-lg max-w-2xl mt-aligned">
+        <!-- Pantalla inicial con opciones -->
+        <div id="inicio">
+            <h1 class="text-4xl font-bold mb-4">¡Bienvenid@ al juego del Amigo Invisible!</h1>
+            <br>
+            <p class="mb-4 text-xl">¡Con regalos secretos y risas para soñar, <br>¡este Amigo Invisible te va a enganchar! 🎁</p>
+            <button class="btn" onclick="nuevoJuego()">🎄 Crea tu grupo 🎄</button>
+            <button class="btn" onclick="insertarCodigo()">🎁 Inserta Código (o email si creaste tu el grupo) 🎁</button>
+        </div>
+
+        <!-- Sección Nuevo Juego (Administrador) -->
+        <div id="nuevo-juego" class="hidden">
+            <h2 class="text-3xl font-bold">¡Tú ahora eres líder y quien gestiona la diversión! 🎉</h2>
+            <h2 class="text-3xl font-bold">Con tu toque mágico, ¡será una gran función!  🎉</h2>
+            <br>
+            <h3 class="text-2xl font-bold"> Prepara tus trucos y tu varita especial🪄...</h3>
+            <h3 class="text-2xl font-bold">Realiza tus misiones y seguro que todo saldrá fenomenal!</h3>
+            <ul class="list-disc list-inside mt-4 text-left">
+                <li>📝Tu primer encargo: el formulario a continuación rellenar, y así el juego poder generar.</li>
+                <li>👥Depués, el código del juego a todos compartir, para que nadie se pierda y que todos puedan asistir.</li>
+                <li>🔒Si alguien la contraseña olvida no hay que temer, tú tendrás la clave para pronto proceder.</li>
+                <li>📅El sorteo en el día señalado realizar y la fecha de entrega fijar, ¡Qué todo esté listo, no se puede atrasar!</li>
+                <li>💰Por último no olvides anotar, el presupuesto que todos podrán gastar.</li>
+            </ul>
+            <p>Ahora sí...¡manos a la obra! Seguro que serás el mejor anfitrión, y todos gritarán de emoción!</p>
+            <form id="admin-form">
+                <label for="admin-nombre">📝Escribe tu nombre aquí,no te hagas de rogar! ¡Así todos sabrán quién va a mandar:
+                    <input id="admin-nombre" class="input-field" type="text" placeholder="Nombre del administrador"required>
+                </label>
+                <label for="admin-email">📧¡Ahora anota tu email sin demorar! ¡Para recuperar el juego si el código se echa a volar!:
+                    <input id="admin-email" class="input-field" type="email" placeholder="Email del administrador"required>
+                </label>
+                <label for="admin-password">🔒Inventa una clave especial y que sea tu secreto más personal!
+                    <input id="admin-password" class="input-field" type="password" placeholder="Contraseña" required>
+                </label>
+                <label for="nombre-grupo">👥¡Ponle nombre a tu grupo, no seas tímido! ¡Hazlo único y divertido!
+                    <input id="nombre-grupo" class="input-field" type="text" placeholder="Nombre del grupo" required>
+                </label>
+                <label for="admin-presupuesto">💰Establece el presupuesto sin tardar, así todos sabrán cuánto podrán gastar:
+                    <input id="admin-presupuesto" class="input-field" type="number" placeholder="Presupuesto en euros" required>
+                </label>
+                <label for="admin-fecha-sorteo">📅El día del sorteo debes elegir, para que la magia se pueda cumplir
+                    <input id="admin-fecha-sorteo" class="input-field" type="date" required>
+                </label>
+                <label for="admin-fecha-entrega">🎁El día especial pronto llegará, pero antes la fecha aquí debes apuntar:
+                    <input id="admin-fecha-entrega" class="input-field" type="date" required>
+                </label>
+                <label for="admin-mensaje">📩Escribe un mensaje si quieres asombrar, o deja el espacio si prefieres callar:
+                    <textarea id="admin-mensaje-grupo" class="input-field" placeholder="Mensaje de bienvenida"></textarea>
+                </label>
+                <label for="admin-participantes">📝👥Anota los nombres sin vacilación, de todos los que quieren entrar en acción:
+                    <textarea id="admin-participantes" class="input-field" placeholder="Introduce un nombre por línea" required></textarea>
+                </label>
+                <button type="button" class="btn" onclick="crearJuego()">🎅 Generar Juego 🎅</button>
+            </form>
+        </div>
+        <!-- Sección Insertar Código -->
+        <div id="insertar-codigo" class="hidden">
+            <h2 class="text-3xl font-bold">Para unirte al juego y empezar a disfrutar, <br>escribe el código... ¡y listo para jugar!. </h2>
+            <br>
+            <h4 class="text-xl font-bold">Si tú creaste el grupo, tu email también puedes ingresar, <br>¡así entrar y todo controlar!</h4>
+            <input type="text" id="codigo-juego" class="border p-2 rounded w-full mt-2" placeholder="Código o Email">
+            <button type="button" class="btn mt-4" onclick="accederJuego()">Acceder al Juego</button>
+        </div>
+
+        <!-- Pantalla de Juego (Listado de Participantes) -->
+        <div id="pantalla-juego" class="hidden">
+            <h1 class="text-3xl font-bold">Te doy la bienvenida al juego del Amigo Invisible de... <br><span id="nombre-grupo-juego" style="font-style: italic;"></span></h1>
+            <h2>(Código del juego: <span id="info-codigo-juego"></span>)</h2>
+            <br>
+            <h4 class="text-2xl font-bold">Con estos datos ya verás, <br>como con este juego un montón disfrutarás.🎉</h4>
+            <br>
+            <p>💰Aquí tienes el tope a gastar, ahora ya sabes cuánto desembolsar!:<br> <span id="presupuesto-juego"></span> €</p>
+            <p>📅Esta la fecha del sorteo es, todo está preparado, ¿lo ves??:<br><span id="fecha-sorteo"></span></p>
+            <p>🎁¡A continuación el día más especial, nos entregaremos los regalos ¡Será genial!:<br> <span id="fecha-entrega"></span></p>
+            <p>📩Quizás leas aquí un mensaje ¡qué ilusión! pero sino... ¡no pierdas la emoción!:<br><span id="mensaje-juego"></span></p>
+            <p>🤯Esta es la persona que este grupo ha creado, ¡si algo no te cuadra, díselo sin reparo!: <br><span id="nombre-administrador"></span></p>
+
+            
+            <h3 class="text-2xl font-bold mt-4">¡Con todo acordado... este juego ya está casi preparado!</h3>
+            <h3 class="text-2xl font-bold mt-4">¡Solo falta estos pasos seguir y verás todo fluir!</h3>
+            <h4 class="text-xl font-bold mt-4">➡️¡Comienza por tu perfil gestionar, <br>y pronto el juego comenzará a brillar ✨!:</h4>
+            <h4 class="text-xl font-bold mt-4">➡️Continúa echando un vistazo a tu amigo invisible, <br>descubre lo que ha deseado para hacerlo posible. 🎁</h4>
+            <h4 class="text-xl font-bold mt-4">➡️Por último🤫a los demás también puedes cotillear,<br> para así poderte inspirar😉:</h4>
+            <ul id="lista-participantes" class="text-left mt-4"></ul>
+        </div>
+
+        <!-- Perfil del Administrador -->
+             
+        <div id="perfil-administrador" class="hidden">
+            <h2 class="text-2xl font-bold">Te doy la bienvenida, mente 🤯creadora del GRUPO</h2>
+            <br>
+            <h4 class="text-xl font-bold">🎮 Si quieres jugar y disfrutar, <br>en tu perfil PERSONAL debes entrar. <br>📋 Pero si organizar es tu misión, <br>el perfil del GRUPO es tu elección.:</h4>
+            <br>
+            <h2 class="text-2xl font-bold">Elige tu opción:</h2>
+           
+        </div>
+        
+        <div id="opciones-perfil" class="hidden">
+            <button class="btn" onclick="verPerfilJuego()">Gestionar perfil del GRUPO</button>
+            <button id="btn-ver-perfil-personal" class="btn">Gestionar tu perfil PERSONAL</button>
+
+        </div>
+        
+        
+        <div id="perfil-juego" class="hidden">
+            <h2 class="text-2xl font-bold">📝Te doy la bienvenida aquí donde todo se puede cambiar, 📊🔧😄 <br>¡Contigo al mando nada va a fallar!:</h2>
+            <br>
+            <label><strong>💰Este es el tope a gastar, ¿está bien o lo vas a cambiar?:</strong>
+                <input id="admin-presupuesto-mostrar" class="input-field" type="number">
+            </label>
+            <label><strong>🎁Aquí está la fecha especial. ¿Hay algún cambio adicional?:</strong>
+                <input id="admin-fecha-entrega-mostrar" class="input-field" type="date">
+            </label>
+            <label><strong>📩En este lugar un mensaje para tu grupo puedes anotar, ¿les quieres asombrar o prefieres callar?:</strong>
+                <textarea id="admin-mensaje-mostrar" class="input-field"></textarea>
+            </label>
+            <label><strong>📅Esta es la fecha del sorteo, no la dejes pasar... ¿La quieres modificar?:</strong>
+                <input id="admin-fecha-sorteo-mostrar" class="input-field" type="date">
+            </label>
+            <br>
+            <p> 🤫¿Alguien la contraseña olvidó? Pues dale el código <strong>123</strong> y todo se solucionó. 🔒</p>
+            <br>
+            <h4 class="text-xl font-bold mt-4">🧐Participantes a la vista!, ahora puedes eliminar o agregar a la lista. 📋</h4>
+            <ul id="lista-participantes-admin" class="text-left mt-4"></ul>
+            <h4 class="text-xl font-bold mt-4">¿Quieres unir a más personas a la diversión? Entonces hazlo a continuación:
+            <input id="nuevo-participante-nombre" class="input-field" type="text" placeholder="Nombre del participante">
+            <button class="btn perfil-juego-btn" onclick="agregarParticipante()">AÑADIR PARTICIPANTE</button>
+          
+            <br>
+            <p><strong>📅¿Ha llegado el día señalado?<br> ¡Pues corre! Realiza el sorteo y sabréis quién os ha tocado:</strong></p>
+            <br>
+            <button class="btn perfil-juego-btn" onclick="realizarSorteo()">REALIZAR SORTEO</button>
+            <br>
+            <button class="btn perfil-juego-btn" onclick="actualizarJuego()">ACTUALIZAR INFO DEL GRUPO</button>
+            <br>
+            <button class="btn perfil-juego-btn" onclick="eliminarJuego()">ELIMINAR GRUPO</button>
+            <br>
+            <button class="btn perfil-juego-btn" onclick="mostrarInformacionJuego()">VOLVER A LA PANTALLA DEL GRUPO</button>
+        </div>
+        
+        <div id="perfil-personal" class="mt-4 hidden">
+            <h2 class="text-xl font-bold">Este es tu perfil personal,<br> ¡ajústalo si necesitas cambiar algo en especial!:</h2>
+            <label><strong>Nombre:</strong>
+                <input id="perfil-nombre" class="input-field" type="text" readonly>
+            </label>
+            
+            <br>
+            <label><strong>Elige tu avatar, ese que te haga brillar✨:</strong>
+                <select id="perfil-avatar" class="input-field">
+                    <option value="🎅">🎅 Santa</option>
+                    <option value="🎄">🎄 Árbol de Navidad</option>
+                    <option value="❄️">❄️ Copo de nieve</option>
+                    <option value="🦌">🦌 Reno</option>
+                    <option value="🎁">🎁 Regalo</option>
+                    <option value="🧦">🧦 Calcetines</option>
+                    <option value="🍗">🍗 Pavo</option>
+                    <option value="🧑‍🎄">🧑‍🎄 Navidad</option>
+                    <option value="🍷">🍷 Vino</option>
+                    <option value="🌟">🌟 Estrella</option>
+                    <option value="🍾">🍾 Botella</option>
+                    <option value="🐧">🐧 Pingüino</option>
+                    <option value="👵">👵 Abuela</option>
+                    <option value="⛄">⛄ Snowman</option>
+                    <option value="🐶">🐶 Perro</option>
+                    <option value="🐥">🐥 Pollito</option>
+                    <option value="🎉">🎉 Fiesta</option>
+                    <option value="🛷">🛷 Trineo</option>
+                    <option value="👩‍🦰">👩‍🦰 Mujer</option>
+                    <option value="🥂">🥂 Brindis</option>
+                    <option value="👴">👴 Abuelo</option>
+                    <option value="🍪">🍪 Galleta</option>
+                    <option value="🕯️">🕯️ Vela</option>
+                    <option value="🤶">🤶 Mama Noel</option>
+                    <option value="👼">👼 Angel</option>
+                    <option value="👨">👨 Hombre</option>
+                    <option value="👧">👧 Chica</option>
+                </select>
+            </label>
+            <label><strong>Escribe al menos tres cosas que anheles tener <br> desde juguetes, libros o algo de comer. <br> Si se online se puede comprar, <br>añade el link para no fallar:</strong>
+                <textarea id="perfil-deseos" class="input-field"></textarea>
+            </label>
+            <label><strong>Para tu amigo invisible un mensaje deja sin reparo... ✉️🎁 ¿Te sientes inspirado? </strong>
+                <textarea id="admin-mensaje" class="input-field"></textarea>
+            </label>
+            <h2 class="text-xl font-bold"><strong>Te ha tocado regalar a...</strong> <span id="amigo-invisible-admin"></span></h2>
+                <br>
+            <p><strong>¡Prepárate para sorprender con un regalo que le haga enloquecer!</strong></p>
+            
+                <button class="btn" onclick="actualizarPerfilAdministrador()">ACTUALIZAR PERFIL</button>
+                <button class="btn" onclick="mostrarInformacionJuego()">VOLVER AL JUEGO</button>
+        </div>
+        
+        
+        <!-- Perfil de Participante -->
+        <div id="perfil-participante" class="hidden">
+            <h2 class="text-3xl font-bold">Perfil de: <span id="perfil-nombre-participante"></span></h2>
+            <h2 class="text-2xl font-bold">Este es tu espacio personal,<br> ¡ajusta los datos si necesitas cambiar algo en especial!</h2>
+                        
+            <br>
+            <label><strong>Elige tu avatar, ese que te haga brillar✨:</strong>
+                <select id="participante-avatar" class="input-field">
+                    <option value="🎅">🎅 Santa</option>
+                    <option value="🎄">🎄 Árbol de Navidad</option>
+                    <option value="❄️">❄️ Copo de nieve</option>
+                    <option value="🦌">🦌 Reno</option>
+                    <option value="🎁">🎁 Regalo</option>
+                    <option value="🧦">🧦 Caldetines</option>
+                    <option value="🍗">🍗 Pavo</option>
+                    <option value="🧑‍🎄">🧑‍🎄 Navidad</option>
+                    <option value="🍷">🍷 Vino</option>
+                    <option value="🌟">🌟 Estrella</option>
+                    <option value="🍾">🍾 Botella</option>
+                    <option value="🐧">🐧 Pingüino</option>
+                    <option value="👵">👵 Abuela</option>
+                    <option value="⛄">⛄ Snowman</option>
+                    <option value="🐶">🐶 Perro</option>
+                    <option value="🐥">🐥 Pollito</option>
+                    <option value="🎉">🎉 Fiesta</option>
+                    <option value="🛷">🛷 Trineo</option>
+                    <option value="👩‍🦰">👩‍🦰 Mujer</option>
+                    <option value="🥂">🥂 Brindis</option>
+                    <option value="👴">👴 Abuelo</option>
+                    <option value="🍪">🍪 Galleta</option>
+                    <option value="🕯️">🕯️ Vela</option>
+                    <option value="🤶">🤶 Mama Noel</option>
+                    <option value="👼">👼 Angel</option>
+                    <option value="👨">👨 Hombre</option>
+                    <option value="👧">👧 Chica</option>
+                </select>
+            </label>
+            <label><strong>Escribe al menos tres cosas que anheles tener <br> desde juguetes, libros o algo de comer. <br> Y si se puede comprar online sin estrés, <br>añade el link para hacerlo aún más fácil, ¡ya ves!:</strong>
+                <textarea id="participante-deseos" class="input-field"></textarea>
+            </label>
+            <label><strong>Para tu amigo invisible un mensaje deja sin reparo... ✉️🎁 ¿Te sientes inspirado?</strong>
+                <textarea id="participante-mensaje2" class="input-field"></textarea>
+            </label>
+            <br>
+            <br>
+            <h2 class="text-xl font-bold"><strong>Te ha tocado regalar a...</strong> <span id="amigo-invisible-participante"></span></h2>
+            <br>
+            <p><strong>¡Prepárate para sorprender con un regalo que le haga enloquecer!</strong></p>
+            <br>
+            <button class="btn" onclick="actualizarPerfilParticipante()">Actualizar Perfil</button>
+            <button class="btn" onclick="mostrarInformacionJuego()">VOLVER AL JUEGO</button>
+        </div>
+        
+        <div id="perfil-participante-ver" class="hidden">
+            <h2 class="text-3xl font-bold">Perfil de: <span id="perfil-nombre-participante-ver"></span></h2>
+            <label><strong>Este es el avatar que más me hace brillar:</strong>
+                <input id="participante-avatar-ver" class="input-field" type="text" readonly>
+            </label>
+            <label><strong>Esta es mi lista de deseos, échale un vistazo y... ¡cumple mis anhelos🌟🎁!:</strong>
+                <textarea id="participante-deseos-ver" class="input-field" readonly></textarea>
+            </label>
+            <label><strong> Este es el mensaje que quizás haya dejado... ¿ya lo has ojeado?</strong>
+                <textarea id="participante-mensaje" class="input-field" readonly></textarea>
+            </label>
+            <!-- Botón para volver a la pantalla de juego -->
+            <button class="btn" onclick="mostrarInformacionJuego()">VOLVER AL JUEGO</button>
+        </div>
+
+        <div id="perfil-admin-ver" class="hidden">
+            <h2 class="text-3xl font-bold">Perfil de: <span id="perfil-nombre-admin-ver"></span></h2>
+            <label><strong>Este es el avatar que más me hace brillar:</strong>
+                <input id="admin-avatar-ver" class="input-field" type="text" readonly>
+            </label>
+            <label><strong>Esta es mi lista de deseos, échale un vistazo y... ¡cumple mis anhelos🌟🎁!:</strong>
+                <textarea id="admin-deseos-ver" class="input-field" readonly></textarea>
+            </label>
+            <label><strong>Este es el mensaje que quizás haya dejado... si me encontraba inspirad@ 😉:</strong>
+                <textarea id="admin-mensaje-ver" class="input-field" readonly></textarea>
+            </label>
+            <!-- Botón para volver a la pantalla de juego -->
+            <button class="btn" onclick="mostrarInformacionJuego()">VOLVER AL JUEGO</button>
+        </div>
+        
+    <!-- Scripts de Firebase y configuración -->
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+            import {  getFirestore, serverTimestamp, query, where, collection, addDoc, doc, setDoc, getDoc, updateDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        // Configuración de Firebase
+            const firebaseConfig = {
+                apiKey: "AIzaSyClZpeQVJAy2lvFOdXJSYz5LIl1ZIYQJ88",
+                authDomain: "amigo-invisible-98413.firebaseapp.com",
+                projectId: "amigo-invisible-98413",
+                storageBucket: "amigo-invisible-98413.appspot.com", // Ajustado a "appspot.com"
+                messagingSenderId: "362605855318",
+                appId: "1:362605855318:web:c62743248a73ac042271f7",
+                measurementId: "G-53VTRP1TT0"
+            };
+        
+            // Inicializar Firebase
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+            const db = getFirestore(app);
+            
+           
+            let codigoActual = null;
+            let juegoActual = null;
+          
+            // Función para generar y guardar el código de juego en Firestore
+            window.nuevoJuego = function() {
+          
+                // Genera el código de juego y lo almacena
+                const codigoJuego = Math.random().toString(36).substr(2, 9);
+
+                // Oculta la pantalla de inicio y muestra el formulario para crear el juego
+                document.getElementById('inicio').classList.add('hidden');
+                document.getElementById('pantalla-juego').classList.add('hidden');
+                document.getElementById('nuevo-juego').classList.remove('hidden');
+
+                // Agregar un event listener al botón "Generar Juego"
+                document.getElementById('boton-generar-juego').onclick = function() {
+                    // Referencia a la colección 'juegos'
+                    const juegosCol = collection(db, 'juegos');
+
+                    // Agregar un nuevo documento a la colección
+                    addDoc(juegosCol, {
+                        codigo: codigoJuego,
+                        timestamp: serverTimestamp() // Uso de serverTimestamp() de la forma correcta
+                    })
+                    .then(function(docRef) {
+                    
+                        alert("Código de grupo generado: " + codigoJuego); // Muestra el código generado
+                    })
+                    .catch(function(error) {
+                        console.error("Error al guardar el código de grupo: ", error);
+                    });
+                };
+            };
+
+            
+            // Lógica para insertar insertar codigo al juego
+            
+            window.insertarCodigo = function() {
+  
+
+                // Muestra la sección para insertar el código
+                document.getElementById('insertar-codigo').classList.remove('hidden');
+
+                // Opcionalmente, oculta cualquier otra pantalla
+                document.getElementById('pantalla-juego').classList.add('hidden');
+            };
+
+            // Lógica para  acceder al juego
+
+            window.accederJuego = function() {
+                
+                const input = document.getElementById('codigo-juego').value;
+                const codigo = input.trim();
+
+                // Verifica si hay un código ingresado
+                if (!codigo) {
+                    alert("Por favor, introduce un código o email.");
+                    return; // Salimos de la función si no hay entrada
+                }
+
+                // Si el usuario ingresa un email en lugar de un código
+                if (codigo.includes("@")) {
+                    // Buscar todos los documentos en la colección "juegos" que coincidan con el email ingresado
+                    const juegosRef = collection(db, "juegos");
+                    const queryEmail = query(juegosRef, where("administrador.email", "==", codigo));
+
+                    getDocs(queryEmail).then(snapshot => {
+                        if (!snapshot.empty) {
+                            const juegos = [];
+                            snapshot.forEach(doc => {
+                                juegos.push({ codigo: doc.id, nombreGrupo: doc.data().nombreGrupo });
+                            });
+
+                            // Si hay más de un juego asociado con el email
+                            if (juegos.length > 1) {
+                                const opciones = juegos.map(juego => `${juego.nombreGrupo} (Código: ${juego.codigo})`).join("\n");
+                                const seleccion = prompt(`Elige el grupo al que deseas acceder:\n${opciones}`);
+
+                                // Buscar el código seleccionado en la lista de juegos
+                                const juegoSeleccionado = juegos.find(j => seleccion.includes(j.codigo));
+                                if (juegoSeleccionado) {
+                                    cargarJuego(juegoSeleccionado.codigo);
+                                } else {
+                                    alert("Selección inválida. Por favor, intenta de nuevo.");
+                                }
+                            } else {
+                                // Si solo hay un grupo asociado, acceder directamente
+                                cargarJuego(juegos[0].codigo);
+                            }
+                        } else {
+                            alert("No se encontraron juegos asociados con este email.");
+                        }
+                    }).catch(error => {
+                        console.error("Error al buscar juegos por email: ", error);
+                    });
+                } else {
+                    // Si se ingresa un código, intentar cargar el juego directamente
+                    cargarJuego(codigo);
+                }
+            };
+
+
+            window.cargarJuego = function(codigo) {
+                getDoc(doc(db, "juegos", codigo))
+                    .then(doc => {
+                        if (doc.exists()) {
+                            juegoActual = doc.data();
+                            codigoActual = codigo;
+
+                            // Log para verificar los datos cargados del administrador
+                          
+
+                            // Verificar y asignar administrador temporal si no existe
+                            verificarYAsignarAdminTemporal();
+
+                            // Inicializar `mensajeAmigo` del administrador si no existe
+                            if (!juegoActual.administrador.mensajeAmigo) {
+                                juegoActual.administrador.mensajeAmigo = "";
+                            }
+
+                            // Verificar y mostrar logs para depuración
+                          
+
+                            // Ocultar el div de insertar código y mostrar la pantalla de juego
+                            const insertarCodigoDiv = document.getElementById('insertar-codigo');
+                            const pantallaJuegoDiv = document.getElementById('pantalla-juego');
+                            if (insertarCodigoDiv && pantallaJuegoDiv) {
+                                insertarCodigoDiv.classList.add('hidden');
+                                pantallaJuegoDiv.classList.remove('hidden');
+                       
+                            } else {
+                                console.error("No se encontraron los elementos 'insertar-codigo' o 'pantalla-juego'.");
+                            }
+
+                            // Llamar a la función para mostrar la información del juego
+                            mostrarInformacionJuego();
+                        } else {
+                            alert("Código incorrecto.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error al acceder al juego:", error);
+                    });
+            };
+
+            window.verificarYAsignarAdminTemporal = function () {
+                // Verificar si el administrador no existe en la lista de participantes
+                const adminNombre = juegoActual.administrador?.nombre;
+                const adminExiste = juegoActual.participantes.some(p => p.nombre === adminNombre);
+
+                if (!adminExiste) {
+                    alert("No se encontró administrador para este juego. Se asignará un administrador temporal.");
+
+                    // Asignar al primer participante como administrador temporal
+                    const nuevoAdmin = juegoActual.participantes[0];
+                    juegoActual.administrador = {
+                        nombre: nuevoAdmin.nombre,
+                        email: nuevoAdmin.email || "",
+                        password: nuevoAdmin.password || "123"
+                    };
+
+                    // Actualizar el participante asignado como administrador
+                    nuevoAdmin.esAdministrador = true;
+                                // **Actualizar inmediatamente la interfaz**
+                    document.getElementById('nombre-administrador').textContent = nuevoAdmin.nombre;
+                    // Guardar los cambios en Firestore
+                    updateDoc(doc(db, "juegos", String(codigoActual)), {
+                        administrador: juegoActual.administrador,
+                        participantes: juegoActual.participantes
+                    }).then(() => {
+                        
+                        alert(`Se ha asignado como administrador temporal a: ${nuevoAdmin.nombre}`);
+                        
+                        
+                    }).catch(error => {
+                        console.error("Error al asignar el administrador temporal:", error);
+                    });
+                }
+            };
+
+
+            // Lógica para mostrar la fecha
+            window.formatoFecha = function(fecha) {
+                if (!fecha) return ""; // Verificar que la fecha no sea nula
+                const date = new Date(fecha);
+                return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+            };
+
+
+            // Lógica para crear nuevo juego
+            
+            window.crearJuego = function() {
+                const participantesInputValue = document.getElementById('admin-participantes').value.trim().split('\n').map(nombre => nombre.trim());
+               
+                // Verificar nombres duplicados
+                const nombresUnicos = new Set(participantesInputValue);
+                if (nombresUnicos.size !== participantesInputValue.length) {
+                    alert("Listado no válido: Hay nombres duplicados. Por favor, introduce nombres únicos.");
+                    return;
+                }
+
+               
+                const codigo = Math.floor(1000 + Math.random() * 9000);
+                const nombreGrupo = document.getElementById('nombre-grupo').value;
+                const nombre = document.getElementById('admin-nombre').value;
+                const email = document.getElementById('admin-email').value;
+                const password = document.getElementById('admin-password').value;
+                const presupuesto = document.getElementById('admin-presupuesto').value;
+                const fechaSorteo = document.getElementById('admin-fecha-sorteo').value;
+                const fechaEntrega = document.getElementById('admin-fecha-entrega').value;
+                const mensaje = document.getElementById('admin-mensaje-grupo').value;
+
+                const participantes = participantesInputValue.map(nombre => ({
+                    nombre: nombre,
+                    avatar: "",
+                    deseos: "",
+                    password: "",
+                    amigoInvisible: "",
+                    mensajeAmigo: "",
+                    esAdministrador: false // No son administradores por defecto
+                })).filter(part => part.nombre);
+
+                // Incluir al administrador como participante
+                participantes.push({
+                    nombre: nombre,
+                    email: email,
+                    avatar: "",
+                    deseos: "",
+                    password: password,
+                    amigoInvisible: "",
+                    mensajeAmigo: "",
+                    esAdministrador: true // Este es el administrador
+                });
+
+                juegoActual = {
+                    codigo: codigo,
+                    nombreGrupo: nombreGrupo,
+                    administrador: { nombre, email, password },
+                    presupuesto,
+                    fechaSorteo,
+                    fechaEntrega,
+                    mensaje,
+                    participantes
+                };
+
+                // Guardar el juego en Firestore
+                setDoc(doc(db, "juegos", String(codigo)), juegoActual).then(() => {
+                    alert(`Juego creado con éxito. Código: ${codigo}`);
+                    document.getElementById('nuevo-juego').classList.add('hidden');
+                    document.getElementById('pantalla-juego').classList.remove('hidden');
+                    mostrarInformacionJuego();
+                }).catch(error => {
+                    console.error("Error al guardar el juego: ", error);
+                });
+            };
+                        // Lógica para agregar participante
+            window.agregarParticipante = function() {
+                    const nombreNuevoParticipante = document.getElementById('nuevo-participante-nombre').value.trim();
+
+                    if (nombreNuevoParticipante === "") {
+                        alert("Por favor, introduce un nombre válido para el participante.");
+                        return;
+                    }
+
+                    // Verificar si el nombre ya existe en la lista de participantes
+                    if (juegoActual.participantes.some(p => p.nombre === nombreNuevoParticipante)) {
+                        alert("El nombre del participante ya existe. Por favor, introduce un nombre diferente.");
+                        return;
+                    }
+
+                    // Añadir el nuevo participante a la lista
+                    juegoActual.participantes.push({
+                        nombre: nombreNuevoParticipante,
+                        avatar: "",
+                        deseos: "",
+                        password: "",
+                        amigoInvisible: "",
+                        mensajeAmigo: ""
+                    });
+
+                
+                // Guardar los cambios en Firestore
+                updateDoc(doc(db, "juegos", String(codigoActual)), {
+                        participantes: juegoActual.participantes
+                    }).then(() => {
+                        alert("¡Participante añadido con éxito!");
+                        // Actualizar la lista después de que el usuario cierra la alerta
+                        actualizarListaParticipantesAdmin();
+                        document.getElementById('nuevo-participante-nombre').value = "";
+                    }).catch(error => {
+                        console.error("Error al agregar participante: ", error);
+                });
+            };
+
+            
+            window.mostrarInformacionJuego = function () {
+              
+                
+                // Verificar si el administrador todavía existe en la lista de participantes
+                const adminNombre = juegoActual.administrador?.nombre;
+                const adminExiste = juegoActual.participantes.some(p => p.nombre === adminNombre);
+
+                // Si el administrador no existe, asignar un administrador temporal
+                if (!adminExiste) {
+                    alert("El administrador no existe. Se asignará un administrador temporal.");
+                    verificarYAsignarAdminTemporal();
+                }
+
+                // Actualizar el nombre del administrador en la interfaz
+                document.getElementById('nombre-administrador').textContent = juegoActual.administrador.nombre || "Administrador temporal";
+              
+            
+                // Ocultar todas las pantallas especificando los IDs directamente 
+                const pantallas = ['inicio','opciones-perfil', 'perfil-juego', 'perfil-personal', 'perfil-administrador', 'perfil-participante-ver', 'perfil-participante', 'perfil-admin-ver']; 
+                pantallas.forEach(id => { const element = document.getElementById(id); if (element) { element.classList.add('hidden'); } });
+                document.getElementById('pantalla-juego').classList.remove('hidden');
+                actualizarListaParticipantes();
+
+                // Mostrar los datos del juego
+                document.getElementById('info-codigo-juego').textContent = codigoActual;
+                document.getElementById('nombre-grupo-juego').textContent = juegoActual.nombreGrupo;
+                document.getElementById('presupuesto-juego').textContent = juegoActual.presupuesto;
+                document.getElementById('fecha-sorteo').textContent = window.formatoFecha(juegoActual.fechaSorteo);
+                document.getElementById('fecha-entrega').textContent = window.formatoFecha(juegoActual.fechaEntrega);
+                document.getElementById('mensaje-juego').textContent = juegoActual.mensaje;
+                document.getElementById('nombre-administrador').textContent = juegoActual.administrador.nombre;
+            };
+               
+                           
+            window.mostrarOpcionesPerfil = function() {
+                    document.getElementById('pantalla-juego').classList.add('hidden');
+                    document.getElementById('perfil-administrador').classList.remove('hidden');
+                    document.getElementById('opciones-perfil').classList.remove('hidden');
+                    document.getElementById('perfil-juego').classList.add('hidden');
+                    document.getElementById('perfil-personal').classList.add('hidden');
+            };
+
+
+            window.verPerfilJuego = function() {
+                    document.getElementById('opciones-perfil').classList.add('hidden');
+                    document.getElementById('inicio').classList.add('hidden');
+                    document.getElementById('perfil-juego').classList.remove('hidden');
+                    document.getElementById('perfil-personal').classList.add('hidden');
+                    document.getElementById('perfil-administrador').classList.add('hidden');
+                    document.getElementById('admin-presupuesto-mostrar').value = juegoActual.presupuesto;
+                    document.getElementById('admin-fecha-sorteo-mostrar').value = juegoActual.fechaSorteo;
+                    document.getElementById('admin-fecha-entrega-mostrar').value = juegoActual.fechaEntrega;
+                    document.getElementById('admin-mensaje-mostrar').value = juegoActual.mensaje;
+                    actualizarListaParticipantesAdmin();
+            };
+            window.verPerfilPersonal = function () {
+               
+                // Verificar si el perfil del administrador está cargado
+                if (!juegoActual || !juegoActual.administrador) {
+                    alert("No se pudo cargar el perfil del administrador. Verifica tu conexión y vuelve a intentarlo.");
+                    return;
+                }
+
+                // Verificar y ocultar cada pantalla solo si existe
+                const pantallas = [
+                    'pantalla-juego',
+                    'perfil-administrador',
+                    'perfil-participante',
+                    'opciones-perfil'
+                ];
+
+                pantallas.forEach(id => {
+                    const elemento = document.getElementById(id);
+                    if (elemento) {
+                        elemento.classList.add('hidden');
+                    } else {
+                        console.warn(`Elemento con ID "${id}" no encontrado.`);
+                    }
+                });
+
+                // Mostrar la pantalla del perfil personal
+                const perfilPersonal = document.getElementById('perfil-personal');
+                if (!perfilPersonal) {
+                    console.error('No se encontró el elemento con ID "perfil-personal".');
+                    return;
+                }
+                perfilPersonal.classList.remove('hidden');
+
+                // Mostrar los datos del administrador
+                const admin = juegoActual.administrador;
+                document.getElementById('perfil-nombre').value = admin.nombre || "";
+                document.getElementById('perfil-avatar').value = admin.avatar || "";
+                document.getElementById('perfil-deseos').value = admin.deseos || "";
+                document.getElementById('admin-mensaje').value = admin.mensajeAmigo || "";
+
+            
+                // Mostrar el nombre del amigo invisible si se ha realizado el sorteo
+                const participante = juegoActual.participantes.find(p => p.nombre === admin.nombre);
+                if (participante && participante.amigoInvisible) {
+                    const amigoInvisible = juegoActual.participantes.find(p => p.nombre === participante.amigoInvisible);
+                    document.getElementById('amigo-invisible-admin').textContent = amigoInvisible ? amigoInvisible.nombre : "Sorteo todavía no realizado";
+                } else {
+                    document.getElementById('amigo-invisible-admin').textContent = "Sorteo todavía no realizado";
+                }
+
+               
+            };
+
+            window.realizarSorteo = function() {
+                    if (juegoActual.participantes.length < 3) {
+                        alert("Se necesitan al menos 3 participantes para realizar el sorteo.");
+                        return;
+                    }
+
+                    if (juegoActual.participantes.some(p => p.amigoInvisible)) {
+                        const confirmar = confirm("Sorteo ya realizado. ¿Quieres volverlo a realizar? Esto cambiaría los datos de los amigos invisibles de todos los participantes.");
+                        if (!confirmar) return;
+                    }
+
+                    let nombres = juegoActual.participantes.map(p => p.nombre);
+                    let amigosAsignados = [...nombres];
+
+                    do {
+                        amigosAsignados = amigosAsignados= [...nombres].sort(() => Math.random() - 0.5);
+                    } while (nombres.some((nombre, index) => nombre === amigosAsignados[index]));
+
+                    juegoActual.participantes.forEach((participante, index) => {
+                        participante.amigoInvisible = amigosAsignados[index];
+                    });
+
+                
+                    
+                    // Guardar el sorteo en Firestore
+                    updateDoc(doc(db, "juegos", String(codigoActual)), {
+                        participantes: juegoActual.participantes
+                    }).then(() => {
+                        alert("¡Sorteo realizado con éxito!");
+                    }).catch(error => {
+                        console.error("Error al realizar el sorteo: ", error);
+                    });
+            };
+ 
+
+                          
+            window.actualizarJuego = function() {
+            
+                juegoActual.presupuesto = document.getElementById('admin-presupuesto-mostrar').value;
+                juegoActual.fechaSorteo = document.getElementById('admin-fecha-sorteo-mostrar').value;
+                juegoActual.fechaEntrega = document.getElementById('admin-fecha-entrega-mostrar').value;
+                juegoActual.mensaje = document.getElementById('admin-mensaje-mostrar').value;
+
+            
+                // Guardar los cambios en Firestore
+                updateDoc(doc(db, "juegos", String(codigoActual)), {
+                    presupuesto: juegoActual.presupuesto,
+                    fechaSorteo: juegoActual.fechaSorteo,
+                    fechaEntrega: juegoActual.fechaEntrega,
+                    mensaje: juegoActual.mensaje
+                }).then(() => {
+                    alert("¡Información del juego actualizada!");
+                    mostrarInformacionJuego();  // Redirige a la pantalla de juego
+                }).catch(error => {
+                    console.error("Error al actualizar el juego: ", error);
+                });
+            };
+
+            window.actualizarListaParticipantes = function() {
+                const lista = document.getElementById('lista-participantes');
+                lista.innerHTML = '';
+                
+                if (juegoActual && Array.isArray(juegoActual.participantes)) {
+                    juegoActual.participantes.forEach((participante, index) => {
+                        const avatar = participante.avatar || '';
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <span>${avatar} ${participante.nombre}</span>
+                            <button class="btn gestionar-perfil-btn" onclick="gestionarPerfil(${index})">GESTIONAR PERFIL</button>
+                            <button class="btn ver-perfil-btn" onclick="mostrarDatosPerfilLectura(${index})">VER PERFIL </button>
+                        `;
+                        lista.appendChild(li);
+                    });
+                } else {
+                    console.error("juegoActual no está definido o participantes no es un arreglo");
+                }
+            };
+ 
+            window.actualizarListaParticipantesAdmin = function() {
+                const lista = document.getElementById('lista-participantes-admin');
+                lista.innerHTML = '';
+                if (juegoActual && Array.isArray(juegoActual.participantes)) {
+                    juegoActual.participantes.forEach((participante, index) => {
+                        const avatar = participante.avatar || '';
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <span>${avatar} ${participante.nombre}</span>
+                            <button class="btn eliminar-participante-btn" onclick="eliminarParticipante(${index})">ELIMINAR PARTICIPANTE</button>
+                        `;
+                        lista.appendChild(li);
+                    });
+                  
+                } else {
+                    console.error("juegoActual no está definido o participantes no es un arreglo");
+                }
+            };
+         
+
+            // Función para eliminar un participante
+            window.eliminarParticipante = function(index) {
+                const participante = juegoActual.participantes[index];
+
+                if (participante.esAdministrador) {
+                    alert("No se puede eliminar al administrador. Debes transferir el rol antes de eliminarlo.");
+                    return;
+                }
+
+                const confirmar = confirm(`¿Estás seguro de que deseas eliminar a ${participante.nombre}?`);
+                if (confirmar) {
+                    juegoActual.participantes.splice(index, 1);
+                    updateDoc(doc(db, "juegos", String(codigoActual)), {
+                        participantes: juegoActual.participantes
+                    }).then(() => {
+                        alert("Participante eliminado con éxito.");
+                        actualizarListaParticipantesAdmin();
+                    }).catch(error => {
+                        console.error("Error al eliminar participante:", error);
+                    });
+                }
+            };
+
+
+            window.transferirRolAdministrador = function() {
+                const participantesSinAdmin = juegoActual.participantes.filter(p => !p.esAdministrador);
+                const opciones = participantesSinAdmin.map(p => p.nombre).join("\n");
+
+                const nuevoAdminNombre = prompt(`Elige el participante que recibirá el rol de administrador:\n${opciones}`);
+                const nuevoAdmin = juegoActual.participantes.find(p => p.nombre === nuevoAdminNombre);
+
+                if (nuevoAdmin) {
+                    // Actualizar el nuevo administrador
+                    nuevoAdmin.esAdministrador = true;
+                    juegoActual.administrador = {
+                        nombre: nuevoAdmin.nombre,
+                        email: nuevoAdmin.email || "",
+                        password: nuevoAdmin.password || "123"
+                    };
+
+                    // Eliminar el rol del administrador actual
+                    const adminIndex = juegoActual.participantes.findIndex(p => p.esAdministrador);
+                    if (adminIndex !== -1) {
+                        juegoActual.participantes[adminIndex].esAdministrador = false;
+                    }
+
+                    // Guardar los cambios en Firestore
+                    updateDoc(doc(db, "juegos", String(codigoActual)), {
+                        administrador: juegoActual.administrador,
+                        participantes: juegoActual.participantes
+                    }).then(() => {
+                        alert("El rol de administrador ha sido transferido con éxito.");
+                        mostrarInformacionJuego();
+                    }).catch(error => {
+                        console.error("Error al transferir el rol de administrador:", error);
+                    });
+                } else {
+                    alert("Participante no encontrado. Por favor, intenta de nuevo.");
+                }
+            };
+
+            //ver sin modificar perfil
+            window.mostrarDatosPerfilLectura = function(index) {
+                const participante = juegoActual.participantes[index];
+
+                // Verificar si el participante es administrador
+                const esAdministrador = (participante.nombre === juegoActual.administrador.nombre);
+
+                if (esAdministrador) {
+                    // Mostrar el perfil del administrador
+                    document.getElementById('pantalla-juego').classList.add('hidden');
+                    document.getElementById('perfil-participante-ver').classList.add('hidden');
+                    document.getElementById('perfil-admin-ver').classList.remove('hidden');
+
+                    // Rellenar los datos del perfil del administrador
+                    const administrador = juegoActual.administrador;
+                    document.getElementById('perfil-nombre-admin-ver').textContent = administrador.nombre;
+                    document.getElementById('admin-avatar-ver').value = administrador.avatar || "No hay avatar registrado... aún no ha sido seleccionado.";
+                    document.getElementById('admin-deseos-ver').value = administrador.deseos || "No hay deseos escritos... pero pronto estarán listos.";
+                    document.getElementById('admin-mensaje-ver').value = administrador.mensajeAmigo || "No hay mensaje redactado... eso es porque todavía no ha sido creado.";
+                } else {
+                    // Mostrar el perfil del participante
+                    document.getElementById('pantalla-juego').classList.add('hidden');
+                    document.getElementById('perfil-admin-ver').classList.add('hidden');
+                    document.getElementById('perfil-participante-ver').classList.remove('hidden');
+
+                    // Rellenar los datos del perfil del participante
+                    document.getElementById('perfil-nombre-participante-ver').textContent = participante.nombre;
+                    document.getElementById('participante-avatar-ver').value = participante.avatar || "No hay avatar registrado... aún no ha sido seleccionado.";
+                    document.getElementById('participante-deseos-ver').value = participante.deseos || "No hay deseos escritos... pero seguro que pronto estarán listos.";
+                    document.getElementById('participante-mensaje').value = participante.mensajeAmigo || "No hay mensaje redactado... eso es porque todavía no ha sido creado.";
+                }
+            };
+            window.gestionarPerfil = function(index) {
+                const participante = juegoActual.participantes[index];
+
+                let inputPassword;
+                alert("La contraseña debe tener al menos 3 caracteres."); // Muestra la alerta solo una vez
+                do {
+                    inputPassword = prompt(`${participante.nombre}, introduce tu clave (o crea una si es la primera vez que estás en este enclave.):\nSi no la recuerdas, escribe 'ayuda', y en un abrir y cerrar de ojos se resuelve tu duda.`);
+                    
+                    if (inputPassword && inputPassword.length >= 3) {
+                        break; // Salir del bucle si la contraseña es válida
+                    } else {
+                        alert("La contraseña debe tener al menos 3 caracteres.");
+                    }
+                } while (true); // Continuar pidiendo hasta que se introduzca una contraseña válida
+
+                // Verificar si se ha escrito "ayuda"
+                if (inputPassword.toLowerCase() === "ayuda") {
+                    const esAdministrador = participante.nombre === juegoActual.administrador.nombre;
+
+                    if (esAdministrador) {
+                        const email = prompt("Introduce tu email registrado, y tu código será restaurado. 📧🔑:");
+                        if (email === juegoActual.administrador.email) {
+                            const nuevaPassword = prompt("Introduce tu nueva clave, y tu seguridad será de primera clase. 🔐✨");
+                            if (nuevaPassword && nuevaPassword.length >= 3) {
+                                juegoActual.administrador.password = nuevaPassword;
+                                const adminIndex = juegoActual.participantes.findIndex(p => p.nombre === juegoActual.administrador.nombre);
+                                if (adminIndex !== -1) {
+                                    juegoActual.participantes[adminIndex].password = nuevaPassword;
+                                }
+
+                                updateDoc(doc(db, "juegos", String(codigoActual)), {
+                                    administrador: juegoActual.administrador,
+                                    participantes: juegoActual.participantes
+                                }).then(() => {
+                                    alert("Contraseña renovada con destreza, ¡ahora tu acceso es una proeza! 🔑✨.");
+                                }).catch(error => {
+                                    console.error("Error al actualizar la contraseña en Firebase:", error);
+                                });
+                            } else {
+                                alert("La contraseña debe tener al menos 3 caracteres.");
+                                return;
+                            }
+                        } else {
+                            alert("Tu email no es correcto, ¡revisa bien el texto!. 📧❌");
+                            return;
+                        }
+                    } else {
+                        alert("¿Sin clave? No hay problema! Solicita a tu líder una nueva y se soluciona el dilema😊");
+                        const contrasenaBasica = prompt("Introduce la contraseña que te ha dado tu líder:");
+
+                        if (contrasenaBasica === "123") {
+                            const nuevaPassword = prompt("Crea tu nueva contraseña ahora y guárdala sin demora (mínimo 3 caracteres):");
+
+                            if (nuevaPassword && nuevaPassword.length >= 3) {
+                                participante.password = nuevaPassword;
+                                alert("Contraseña renovada con éxito.");
+
+                                updateDoc(doc(db, "juegos", String(codigoActual)), {
+                                    participantes: juegoActual.participantes
+                                }).then(() => {
+                                   
+                                }).catch(error => {
+                                    console.error("Error al actualizar la contraseña en Firebase:", error);
+                                });
+                            } else {
+                                alert("Contraseña no válida, ha de tener mínimo 3 caracteres.");
+                            }
+                        } else {
+                            alert("Ups, hay algún problema. Habla con tu admin y soluciona el dilema.");
+                            return;
+                        }
+                    }
+                } else {
+                    if (participante.password && inputPassword !== participante.password) {
+                        alert("Contraseña incorrecta.");
+                        return; // Salir si la contraseña es incorrecta
+                    }
+                    if (!participante.password) {
+                        if (inputPassword.length < 3) {
+                            alert("La contraseña debe tener al menos 3 caracteres.");
+                            return;
+                        }
+                        participante.password = inputPassword;
+                        alert("¡Contraseña creada con éxito!");
+                    }
+                }
+
+                updateDoc(doc(db, "juegos", String(codigoActual)), {
+                    participantes: juegoActual.participantes
+                }).then(() => {
+                   
+                }).catch(error => {
+                    console.error("Error al guardar los datos en Firebase:", error);
+                });
+
+                const esAdministrador = participante.nombre === juegoActual.administrador.nombre;
+
+                if (esAdministrador) {
+                    document.getElementById('pantalla-juego').classList.add('hidden');
+                    document.getElementById('perfil-administrador').classList.remove('hidden');
+                    document.getElementById('opciones-perfil').classList.remove('hidden');
+                } else {
+                    document.getElementById('pantalla-juego').classList.add('hidden');
+                    document.getElementById('perfil-participante').classList.remove('hidden');
+
+                    document.getElementById('perfil-nombre-participante').textContent = participante.nombre;
+                    document.getElementById('participante-avatar').value = participante.avatar || "No hay avatar registrado... aún no lo has seleccionado.";
+                    document.getElementById('participante-deseos').value = participante.deseos || "No hay deseos escritos... ¿a qué esperas para que estén listos?.";
+                    document.getElementById('participante-mensaje2').value = participante.mensajeAmigo || "No hay mensaje redactado con emoción... ¿eso es porque todavía no te ha venido la inspiración?.";
+                    const amigoInvisibleNombre = participante.amigoInvisible || "Sorteo todavía no realizado";
+                    document.getElementById('amigo-invisible-participante').textContent = amigoInvisibleNombre;
+                }
+            };
+
+        
+
+            // Función principal para actualizar el perfil del administrador
+            window.actualizarPerfilAdministrador = function() {
+                const administrador = juegoActual.administrador;
+
+                if (administrador) {
+                    // Verificar la visibilidad del div 'perfil-personal'
+                    const perfilPersonalVisible = !document.getElementById('perfil-personal').classList.contains('hidden');
+                    console.log("Visibilidad del div 'perfil-personal':", perfilPersonalVisible);
+
+                    const mensajeElemento = document.getElementById('admin-mensaje');
+                    if (mensajeElemento) {
+                        mensajeElemento.value = mensajeElemento.value.trim();
+                        console.log("Valor del elemento mensaje antes de asignar a administrador:", mensajeElemento.value);
+                        administrador.mensajeAmigo = mensajeElemento.value;
+                        console.log("Valor asignado a 'administrador.mensajeAmigo' después de forzar actualización:", administrador.mensajeAmigo);
+                    } else {
+                        console.error("No se encontró el elemento con ID 'admin-mensaje'.");
+                    }
+
+                    // Asignar valores de avatar y deseos
+                    const avatarElemento = document.getElementById('perfil-avatar');
+                    if (avatarElemento) {
+                        administrador.avatar = avatarElemento.value;
+                        console.log("Valor del avatar asignado a administrador:", administrador.avatar);
+                    } else {
+                        console.error("No se encontró el elemento con ID 'perfil-avatar'.");
+                    }
+
+                    const deseosElemento = document.getElementById('perfil-deseos');
+                    if (deseosElemento) {
+                        administrador.deseos = deseosElemento.value;
+                        console.log("Valor de deseos asignado a administrador:", administrador.deseos);
+                    } else {
+                        console.error("No se encontró el elemento con ID 'perfil-deseos'.");
+                    }
+
+                    // Mostrar el amigo invisible si ya ha sido asignado
+                    const amigoInvisible = administrador.amigoInvisible || "Sorteo todavía no realizado";
+                    document.getElementById('amigo-invisible-admin').textContent = amigoInvisible;
+
+                    // Encontrar al administrador en el array de participantes
+                    const adminIndex = juegoActual.participantes.findIndex(p => p.nombre === administrador.nombre);
+                    if (adminIndex !== -1) {
+                        juegoActual.participantes[adminIndex].avatar = administrador.avatar;
+                        juegoActual.participantes[adminIndex].deseos = administrador.deseos;
+                        juegoActual.participantes[adminIndex].mensajeAmigo = administrador.mensajeAmigo;
+                        console.log("Datos del administrador en el array de participantes actualizados:", juegoActual.participantes[adminIndex]);
+                    } else {
+                        console.error("Administrador no encontrado en el array de participantes");
+                    }
+
+                    // Guardar cambios en Firestore
+                    const docRef = doc(db, "juegos", String(codigoActual));
+                    console.log("Datos del administrador antes de guardar en Firestore:", administrador);
+
+                    updateDoc(docRef, {
+                        administrador: administrador,
+                        participantes: juegoActual.participantes
+                    })
+                    .then(() => {
+                        console.log("Datos del administrador y participantes actualizados en Firestore");
+                        alert("¡Perfil del administrador actualizado!");
+                    })
+                    .catch((error) => {
+                        console.error("Error al actualizar el perfil del administrador:", error);
+                    });
+                }
+            };
+
+
+
+               // Actualiza los detalles del participante
+            window.actualizarPerfilParticipante = function() {
+                const participanteNombre = document.getElementById('perfil-nombre-participante').textContent;
+              
+
+                const participante = juegoActual.participantes.find(p => p.nombre === participanteNombre);
+             
+                if (participante) {
+                    // Actualiza los detalles del participante
+                    participante.avatar = document.getElementById('participante-avatar').value;
+                    participante.deseos = document.getElementById('participante-deseos').value;
+                    participante.mensajeAmigo = document.getElementById('participante-mensaje2').value;
+                    
+                   
+                   // Mostrar el nombre del amigo invisible o un mensaje si no se ha realizado el sorteo
+                   const amigoInvisibleNombre = participante.amigoInvisible || "Sorteo todavía no realizado";
+                    document.getElementById('amigo-invisible-participante').textContent = amigoInvisibleNombre;
+
+                    // Guardar cambios en Firestore
+                    const docRef = doc(db, "juegos", String(codigoActual));
+                    updateDoc(docRef, { participantes: juegoActual.participantes })
+                        .then(() => {
+                            alert("¡Perfil actualizado!");
+                            actualizarListaParticipantes();
+                            actualizarListaParticipantesAdmin();
+                            // Ocultar el perfil del participante y mostrar el juego
+                            document.getElementById('perfil-participante').classList.add('hidden');
+                            document.getElementById('pantalla-juego').classList.remove('hidden');
+                        })
+                        .catch(error => {
+                            console.error("Error al actualizar el perfil del participante: ", error);
+                        });
+                } else {
+                    console.error("Participante no encontrado");
+                }
+            };
+
+
+            window.eliminarJuego = function() {
+                if (confirm("¿Seguro que quieres eliminar el juego? Perderás toda la información que has puesto con esmero.")) {
+                    // Delete the game from Firestore
+                    const docRef = doc(db, "juegos", String(codigoActual));
+                    
+                    deleteDoc(docRef)
+                        .then(() => {
+                            alert("Juego eliminado.");
+
+                            // Reset the game variables to ensure no leftover data interferes
+                            juegoActual = null;
+                            codigoActual = null;
+
+                            // Hide all game-related screens and show the home screen
+                            document.getElementById('perfil-administrador').classList.add('hidden');
+                            document.getElementById('pantalla-juego').classList.add('hidden');
+                            document.getElementById('inicio').classList.remove('hidden');
+
+                            
+                        })
+                        .catch(error => {
+                            console.error("Error al eliminar el juego: ", error);
+                            alert("Ocurrió un error al intentar eliminar el juego. Por favor, inténtalo de nuevo.");
+                        });
+                };
+            };  
+
+
+
+          
+            window.salirJuego = function() {
+                    // Confirmación antes de salir
+                    if (confirm("¿Estás seguro de que deseas salir del juego y volver al inicio?")) {
+                    
+
+                        // Lista completa de IDs de las pantallas a ocultar
+                        const idsPantallasOcultar = [
+                            'perfil-personal',
+                            'pantalla-juego',
+                            'perfil-administrador',
+                            'insertar-codigo',
+                            'nuevo-juego',
+                            'opciones-perfil',
+                            'perfil-juego',
+                            'perfil-participante'
+                        ];
+
+                        // Ocultar todas las pantallas de la lista
+                        idsPantallasOcultar.forEach(id => {
+                            const elemento = document.getElementById(id);
+                            if (elemento) {
+                                elemento.classList.add('hidden');
+                              
+                            }
+                        });
+
+                        // Mostrar la pantalla de inicio
+                        const pantallaInicio = document.getElementById('inicio');
+                        if (pantallaInicio) {
+                            pantallaInicio.classList.remove('hidden');
+                           
+                        }
+                    }
+            };
+      
+                    // Asignar el evento al botón de "Gestionar tu perfil PERSONAL"
+            document.addEventListener("DOMContentLoaded", function () {
+                const btnVerPerfilPersonal = document.getElementById('btn-ver-perfil-personal');
+
+                if (btnVerPerfilPersonal) {
+                    btnVerPerfilPersonal.onclick = function () {
+                       
+                        verPerfilPersonal();
+                    };
+                } else {
+                    console.error("Botón 'Gestionar tu perfil PERSONAL' no encontrado.");
+                }
+            });
+       
+            
+
+        </script>
+    </div>
+</body>
+</html>
+
